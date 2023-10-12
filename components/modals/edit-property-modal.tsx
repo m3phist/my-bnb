@@ -107,7 +107,7 @@ export const PropertyModal: React.FC<PropertyModalProps> = ({
       dynamic(() => import('../Map'), {
         ssr: false,
       }),
-    [location]
+    []
   );
 
   const setCustomValue = (id: string, value: any) => {

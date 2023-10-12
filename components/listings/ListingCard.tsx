@@ -17,6 +17,7 @@ interface ListingCardProps {
   reservation?: SafeReservation;
   onEdit?: (id: string) => void; // Rename onAction to onEdit
   onDelete?: (id: string) => void; // Add onDelete prop
+  onAction?: (id: string) => void;
   disabled?: boolean;
   actionLabel?: string;
   actionId?: string;
@@ -59,7 +60,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       }
       onDelete?.(actionId);
     },
-    [actionId, disabled]
+    [actionId, disabled, onDelete]
   );
 
   const price = useMemo(() => {
