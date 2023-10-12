@@ -1,10 +1,10 @@
-import { SafeListing } from '@/types';
+import { SafeProperty } from '@/types';
 import { create } from 'zustand';
 
 interface useAlertModalStore {
   isOpen: boolean;
-  listingData: SafeListing | null;
-  onOpen: (listingData: SafeListing) => void;
+  listingData: SafeProperty | null;
+  onOpen: (listingData: SafeProperty) => void;
   onClose: () => void;
 }
 

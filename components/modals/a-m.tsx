@@ -4,25 +4,14 @@ import { Modal } from '@/components/ui/modal';
 import Button from '../Button';
 
 import useAlertModal from '@/hooks/use-alert-modal';
+import { SafeProperty } from '@/types';
 
 interface AlertModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   loading: boolean;
-  listingData: {
-    id: string;
-    category: string;
-    location?: string;
-    locationValue: string;
-    guestCount: number;
-    roomCount: number;
-    bathroomCount: number;
-    imageSrc: string;
-    price: number;
-    title: string;
-    description: string;
-  };
+  listingData: SafeProperty;
 }
 
 export const AlertModal: React.FC<AlertModalProps> = ({

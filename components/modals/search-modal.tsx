@@ -3,17 +3,17 @@
 import { Modal } from '@/components/ui/modal';
 import useSearchModal from '@/hooks/use-search-modal';
 
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import Input from '../inputs/Input';
 import Button from '../Button';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Range } from 'react-date-range';
 import dynamic from 'next/dynamic';
 import CountrySelect, { CountrySelectValue } from '../inputs/CountrySelect';
 import qs from 'query-string';
-import { formatISO } from 'date-fns';
+import { formatISO, differenceInCalendarDays } from 'date-fns';
 import Heading from '../Heading';
+import Calendar from '../inputs/Calendar';
+import Counter from '../inputs/Counter';
 
 enum STEPS {
   LOCATION = 0,
@@ -26,7 +26,6 @@ const SearchModal = () => {
   const params = useSearchParams();
   const searchModal = useSearchModal();
 
-  const [isLoading, setIsLoading] = useState(false);
   const [location, setLocation] = useState<CountrySelectValue>();
   const [step, setStep] = useState(STEPS.LOCATION);
   const [guestCount, setGuestCount] = useState(1);
@@ -37,6 +36,18 @@ const SearchModal = () => {
     endDate: new Date(),
     key: 'selection',
   });
+  const [dayCount, setDayCount] = useState(0);
+
+  useEffect(() => {
+    if (dateRange.startDate && dateRange.endDate) {
+      const dayCount = differenceInCalendarDays(
+        dateRange.endDate,
+        dateRange.startDate
+      );
+
+      setDayCount(dayCount);
+    }
+  }, [dateRange]);
 
   const Map = useMemo(
     () =>
@@ -114,18 +125,14 @@ const SearchModal = () => {
   }, [step]);
 
   const secondaryActionLabel = useMemo(() => {
-    if (step === STEPS.LOCATION) {
-      return undefined;
-    }
-
-    return 'Back';
+    return step === STEPS.LOCATION ? undefined : 'Back';
   }, [step]);
 
   let bodyContent = (
     <div className="flex flex-col gap-4 px-2">
       <Heading
         title="Where do you want to go?"
-        subtitle="Find the perfect location!"
+        subtitle="Find the perfect destination"
       />
       <CountrySelect
         value={location}
@@ -136,25 +143,95 @@ const SearchModal = () => {
       <Map center={location?.latlng} />
 
       {secondaryActionLabel && (
-        <Button
-          label={secondaryActionLabel}
-          disabled={isLoading}
-          onClick={onBack}
-          outline // Add outline style to the Back button
-        />
+        <Button label={secondaryActionLabel} onClick={onBack} outline />
       )}
-
-      <Button label={actionLabel} disabled={isLoading} onClick={() => {}} />
+      <Button label={actionLabel} disabled={!location} onClick={onNext} />
     </div>
   );
+
+  if (step === STEPS.DATE) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title="When do you plan to go?"
+          subtitle="Select your travel date"
+        />
+
+        <Calendar
+          value={dateRange}
+          onChange={(value) => setDateRange(value.selection)}
+        />
+
+        <div className="mt-10 flex gap-2">
+          {secondaryActionLabel && (
+            <Button
+              label={secondaryActionLabel}
+              onClick={onBack}
+              outline // Add outline style to the Back button
+            />
+          )}
+
+          <Button
+            label={actionLabel}
+            disabled={dayCount === 0}
+            onClick={onNext}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (step === STEPS.INFO) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading
+          title="More information"
+          subtitle="Let us find you the right place"
+        />
+
+        <Counter
+          title="Guests"
+          subtitle="How many guests are there?"
+          value={guestCount}
+          onChange={(value) => setGuestCount(value)}
+        />
+
+        <Counter
+          title="Rooms"
+          subtitle="How many rooms do you need?"
+          value={roomCount}
+          onChange={(value) => setRoomCount(value)}
+        />
+
+        <Counter
+          title="Bathrooms"
+          subtitle="How many bathrooms do you prefer?"
+          value={bathroomCount}
+          onChange={(value) => setBathroomCount(value)}
+        />
+
+        <div className="mt-10 flex gap-2">
+          {secondaryActionLabel && (
+            <Button
+              label={secondaryActionLabel}
+              onClick={onBack}
+              outline // Add outline style to the Back button
+            />
+          )}
+
+          <Button label={actionLabel} onClick={onSubmit} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Modal
       title="Search"
-      description="Find properties"
       isOpen={searchModal.isOpen}
       onClose={searchModal.onClose}
     >
+      <hr />
       <div>
         <div className="space-y-4 py-2 pb-4">{bodyContent}</div>
       </div>

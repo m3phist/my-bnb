@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast';
 import Container from '@/components/Container';
 import Heading from '@/components/Heading';
 import ListingCard from '@/components/listings/ListingCard';
-import { SafeListing, SafeUser } from '@/types';
+import { SafeListing, SafeUser, SafeProperty } from '@/types';
 import usePropertyModal from '@/hooks/use-property-modal';
 import { PropertyModal } from '@/components/modals/edit-property-modal';
 import { AlertModal } from '@/components/modals/a-m';
@@ -41,36 +41,17 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
       const listingToDelete = listings.find((listing) => listing.id === id);
 
       if (listingToDelete) {
-        const {
-          id,
-          title,
-          description,
-          imageSrc,
-          category,
-          roomCount,
-          bathroomCount,
-          guestCount,
-          locationValue,
-          userId,
-          price,
-          createdAt,
-        } = listingToDelete;
+        const { id, title, description } = listingToDelete;
 
-        const listingData = {
+        const listingData: SafeProperty = {
+          // Use SafeProperty type
           id,
           title,
           description,
-          imageSrc,
-          category,
-          roomCount,
-          bathroomCount,
-          guestCount,
-          locationValue,
-          userId,
-          price,
-          createdAt,
         };
+
         console.log('propertiesclient', listingData);
+
         // Pass the listingData as an argument to alertModal.onOpen()
         alertModal.onOpen(listingData);
       }

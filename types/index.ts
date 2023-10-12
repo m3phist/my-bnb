@@ -22,3 +22,9 @@ export type SafeUser = Omit<
   updatedAt: string;
   emailVerified: string | null;
 };
+
+export type SafeProperty = {
+  id: string;
+  title: string;
+  description: string;
+};
