@@ -98,7 +98,7 @@ export const LoginModal = () => {
       />
       <div className="text-neutral-500 text-center mt-4 font-light">
         <p>
-          Don't have an account?
+          Don&apos;t have an account?
           <span
             onClick={onToggle}
             className="
